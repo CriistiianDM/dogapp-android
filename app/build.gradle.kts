@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -19,7 +21,13 @@ android {
             useSupportLibrary = true
         }
     }
-
+    gradle.projectsLoaded {
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+            kotlinOptions {
+                freeCompilerArgs = freeCompilerArgs + "-XXLanguage:+NonParenthesizedAnnotationsOnFunctionalTypes"
+            }
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -47,6 +55,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildFeatures {
+        dataBinding = true
+    }
 }
 
 dependencies {
@@ -61,15 +72,29 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
+    // Fragments
+    implementation ("androidx.fragment:fragment-ktx:1.7.0")
+
     //Biometric
     implementation("androidx.biometric:biometric:1.1.0")
 
+    // Room
+    implementation ("androidx.room:room-runtime:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
+    implementation ("com.getbase:floatingactionbutton:1.10.1")
+
+    // LiveData
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
 
     //navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
     implementation("androidx.navigation:navigation-common:$navVersion")
 
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
